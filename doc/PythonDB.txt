@@ -1,0 +1,282 @@
+Exemplo de daemon - http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
+
+Banco: ControlGroup
+
+-empresas-
+--Id_empresa - int auto_increment
+--nome_fantasia - Char 255
+--razao_social - char 255
+--cnpj - Char 60
+
+-sms_modems-
+--id_modem - int auto_increment
+--imei_modem - char 255
+--imei_chip - char 255
+--marca-- char 255
+--modelo-- char 255
+--situacao- char 1
+- dipositivo - char 255
+--data_registro - data Current_date()
+ 
+-sms_campanha-
+--id_campanha  - int auto_increment
+--id_empresa - Foreign key
+--texto - char 255
+--situacao - char 1
+--datacampanha  - data Current_date()
+
+-sms_telefones-
+--id_telefone  - int auto_increment
+--id_campanha  - Foreign key
+--numero - char 20
+
+
+-sms_envio-
+---ID_envio  - int auto_increment
+---Id_empresa  - Foreign key
+---Id_campanha  - Foreign key
+---id_modem  - Foreign key
+---id_telefone - Foreign key
+---Texto - char 170
+---DataCadastro - data Current_date()
+---DataProcessamento  - data Current_date()
+---Situacao - char 1
+---data_atualizacao - data Current_date()
+---data_envio  - data Current_date()
+
+
+-sms_recebimento
+---id_recebimento  - int auto_increment
+---numero_remetente - char 20
+---numero_destinatario - char 20
+---texto - char 170
+---situacao - char 1
+---data_recebimento  - data Current_date()
+
+
+-clog_historico
+---id_historico  - int auto_increment
+---horario - DATETIME
+---funcao - SMALLINT
+---rede_eletrica - BIT
+---ar_condicionado - SMALLINT
+---horas - SMALLINT
+---minutos - SMALLINT
+---temperatura - SMALLINT 
+
+
+
+
+
+
+CREATE DATABASE  IF NOT EXISTS `controlgroup` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `controlgroup`;
+-- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
+--
+-- Host: 127.0.0.1    Database: sms
+-- ------------------------------------------------------
+-- Server version	5.6.16
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `clog_historico`
+--
+
+DROP TABLE IF EXISTS `clog_historico`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `clog_historico` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `horario` datetime DEFAULT NULL,
+  `funcao` smallint(6) DEFAULT NULL,
+  `rede_eletrica` bit(1) DEFAULT NULL,
+  `ar_condicionado` smallint(6) DEFAULT NULL,
+  `horas` smallint(6) DEFAULT NULL,
+  `minutos` smallint(6) DEFAULT NULL,
+  `temperatura` smallint(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `clog_historico`
+--
+
+LOCK TABLES `clog_historico` WRITE;
+/*!40000 ALTER TABLE `clog_historico` DISABLE KEYS */;
+/*!40000 ALTER TABLE `clog_historico` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `empresas`
+--
+
+DROP TABLE IF EXISTS `empresas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `empresas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(80) NOT NULL,
+  `razao_social` varchar(80) DEFAULT NULL,
+  `cpf_cnpj` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `empresas`
+--
+
+LOCK TABLES `empresas` WRITE;
+/*!40000 ALTER TABLE `empresas` DISABLE KEYS */;
+/*!40000 ALTER TABLE `empresas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sms_campanhas`
+--
+
+DROP TABLE IF EXISTS `sms_campanhas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sms_campanhas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_empresa` int(11) DEFAULT NULL,
+  `texto` varchar(160) DEFAULT NULL,
+  `situacao` char(1) DEFAULT NULL,
+  `data_campanha` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_campanhas_empresas_idx` (`id_empresa`),
+  CONSTRAINT `fk_campanhas_empresas` FOREIGN KEY (`id_empresa`) REFERENCES `empresas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sms_campanhas`
+--
+
+LOCK TABLES `sms_campanhas` WRITE;
+/*!40000 ALTER TABLE `sms_campanhas` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sms_campanhas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sms_envios`
+--
+
+DROP TABLE IF EXISTS `sms_envios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sms_envios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_empresa` int(11) DEFAULT NULL,
+  `id_campanha` int(11) DEFAULT NULL,
+  `id_modem` int(11) DEFAULT NULL,
+  `telefone` varchar(15) DEFAULT NULL,
+  `texto` varchar(170) DEFAULT NULL,
+  `situacao` char(1) DEFAULT NULL,
+  `data_cadastro` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `data_processamento` datetime DEFAULT NULL,
+  `data_atualizacao` datetime DEFAULT NULL,
+  `data_envio` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_envios_empresas_idx` (`id_empresa`),
+  KEY `fk_envios_campanhas_idx` (`id_campanha`),
+  KEY `fk_envios_modems_idx` (`id_modem`),
+  CONSTRAINT `fk_envios_empresas` FOREIGN KEY (`id_empresa`) REFERENCES `empresas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_envios_campanhas` FOREIGN KEY (`id_campanha`) REFERENCES `sms_campanhas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_envios_modems` FOREIGN KEY (`id_modem`) REFERENCES `sms_modems` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sms_envios`
+--
+
+LOCK TABLES `sms_envios` WRITE;
+/*!40000 ALTER TABLE `sms_envios` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sms_envios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sms_modems`
+--
+
+DROP TABLE IF EXISTS `sms_modems`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sms_modems` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `imei_modem` varchar(80) DEFAULT NULL,
+  `imei_chip` varchar(80) DEFAULT NULL,
+  `marca` varchar(80) DEFAULT NULL,
+  `modelo` varchar(80) DEFAULT NULL,
+  `situacao` char(1) DEFAULT NULL,
+  `mapeamento` varchar(80) DEFAULT NULL,
+  `data_registro` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sms_modems`
+--
+
+LOCK TABLES `sms_modems` WRITE;
+/*!40000 ALTER TABLE `sms_modems` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sms_modems` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sms_recebimentos`
+--
+
+DROP TABLE IF EXISTS `sms_recebimentos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sms_recebimentos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `numero_remetente` varchar(15) DEFAULT NULL,
+  `numero_destinatario` varchar(15) DEFAULT NULL,
+  `texto` varchar(170) DEFAULT NULL,
+  `situacao` char(1) DEFAULT NULL,
+  `data_recebimento` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+ALTER TABLE `sms_envios`
+	CHANGE COLUMN `situacao` `situacao` CHAR(1) NULL DEFAULT 'P' AFTER `texto`;
+--
+-- Dumping data for table `sms_recebimentos`
+--
+
+LOCK TABLES `sms_recebimentos` WRITE;
+/*!40000 ALTER TABLE `sms_recebimentos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sms_recebimentos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'sms'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2014-11-07 12:14:47
