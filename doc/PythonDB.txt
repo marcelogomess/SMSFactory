@@ -37,7 +37,6 @@ Banco: ControlGroup
 ---Id_campanha  - Foreign key
 ---id_modem  - Foreign key
 ---id_telefone - Foreign key
----Texto - char 170
 ---DataCadastro - data Current_date()
 ---DataProcessamento  - data Current_date()
 ---Situacao - char 1
